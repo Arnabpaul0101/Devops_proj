@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'bloodbank-app'
         IMAGE_TAG  = "${BUILD_NUMBER}"
-        REGISTRY   = 'your-dockerhub-username'   // TODO: replace with your Docker Hub username
+        REGISTRY   = 'mohak0039'
     }
 
     stages {
@@ -18,23 +18,15 @@ pipeline {
 
         stage('Build') {
             steps {
-                dir('app') {
-                    sh "docker build -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ."
-                    sh "docker tag ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY}/${IMAGE_NAME}:latest"
-                }
+                bat "docker build -f app/Dockerfile -t ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ."
+                bat "docker tag ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} ${REGISTRY}/${IMAGE_NAME}:latest"
                 echo "Image built: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
         }
 
         stage('Test') {
             steps {
-                sh """
-                    docker run --rm \
-                        -e FLASK_ENV=testing \
-                        -v \$(pwd)/tests:/app/tests \
-                        ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} \
-                        python -m pytest tests/ -v --tb=short
-                """
+                bat "docker run --rm -e FLASK_ENV=testing ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG} python -m pytest tests/ -v --tb=short"
             }
         }
 
@@ -48,9 +40,9 @@ pipeline {
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_PASS'
                 )]) {
-                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
-                    sh "docker push ${REGISTRY}/${IMAGE_NAME}:latest"
+                    bat "docker login -u %DOCKER_USER% -p %DOCKER_PASS%"
+                    bat "docker push ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
+                    bat "docker push ${REGISTRY}/${IMAGE_NAME}:latest"
                 }
                 echo "Image pushed: ${REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}"
             }
@@ -61,9 +53,9 @@ pipeline {
                 branch 'main'
             }
             steps {
-                sh 'docker-compose down --remove-orphans || true'
-                sh "IMAGE_TAG=${IMAGE_TAG} REGISTRY=${REGISTRY} docker-compose up -d"
-                sh 'docker-compose ps'
+                bat "docker-compose down --remove-orphans & exit /B 0"
+                bat "docker-compose up -d"
+                bat "docker-compose ps"
                 echo "Application deployed on port 5000"
             }
         }
@@ -72,7 +64,7 @@ pipeline {
 
     post {
         always {
-            sh 'docker logout || true'
+            bat "docker logout & exit /B 0"
         }
         success {
             echo "Pipeline succeeded for build #${BUILD_NUMBER}"

@@ -21,7 +21,9 @@ services:
       retries: 5
 
   app:
-    build: ./app
+    build:
+      context: .
+      dockerfile: app/Dockerfile
     image: ${REGISTRY:-local}/bloodbank-app:${IMAGE_TAG:-latest}
     container_name: bloodbank_app
     ports:
