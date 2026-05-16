@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — Blood Bank MS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Dashboard</h2>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card summary-card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-4 fw-bold text-danger">{{ donor_count }}</div>
+                <p class="card-text text-muted mt-2">Registered Donors</p>
+                <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-danger btn-sm mt-2">View All</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card summary-card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-4 fw-bold text-success">{{ total_units }}</div>
+                <p class="card-text text-muted mt-2">Total Blood Units in Stock</p>
+                <a href="{{ url_for('inventory.list_inventory') }}" class="btn btn-outline-success btn-sm mt-2">View Inventory</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card summary-card border-0 shadow-sm h-100">
+            <div class="card-body text-center">
+                <div class="display-4 fw-bold text-warning">{{ pending_count }}</div>
+                <p class="card-text text-muted mt-2">Pending Blood Requests</p>
+                <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-warning btn-sm mt-2">View Requests</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title">Quick Blood Type Search</h5>
+        <form action="{{ url_for('search') }}" method="get" class="row g-2">
+            <div class="col-auto">
+                <select name="q" class="form-select">
+                    <option value="">Select blood type...</option>
+                    {% for bt in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}
+                        <option value="{{ bt }}">{{ bt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-auto">
+                <select name="type" class="form-select">
+                    <option value="donor">Search Donors</option>
+                    <option value="inventory">Search Inventory</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-danger">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

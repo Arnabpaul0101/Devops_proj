@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}Search Results — Blood Bank MS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Search Results</h2>
+
+{% if q %}
+    <p class="text-muted">
+        Showing results for blood type <strong>{{ q }}</strong>
+        ({{ 'donors' if search_type == 'donor' else 'inventory' }})
+    </p>
+
+    {% if results %}
+        {% if search_type == 'donor' %}
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr><th>Name</th><th>Age</th><th>Blood Type</th><th>Phone</th><th>City</th></tr>
+                </thead>
+                <tbody>
+                    {% for d in results %}
+                    <tr>
+                        <td><a href="{{ url_for('donors.detail', donor_id=d.id) }}">{{ d.name }}</a></td>
+                        <td>{{ d.age }}</td>
+                        <td><span class="badge bg-danger">{{ d.blood_type }}</span></td>
+                        <td>{{ d.phone }}</td>
+                        <td>{{ d.city or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr><th>Blood Type</th><th>Units Available</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in results %}
+                    <tr>
+                        <td><span class="badge bg-danger">{{ item.blood_type }}</span></td>
+                        <td>{{ item.units }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    {% else %}
+        <div class="alert alert-info">No results found for blood type <strong>{{ q }}</strong>.</div>
+    {% endif %}
+{% else %}
+    <div class="alert alert-secondary">Use the search form on the Dashboard to find donors or inventory by blood type.</div>
+{% endif %}
+
+<a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary mt-3">Back to Dashboard</a>
+{% endblock %}

@@ -1,0 +1,24 @@
+.bb-navbar {
+    background-color: #b71c1c;
+}
+
+.bb-navbar .nav-link:hover {
+    color: #ffcdd2 !important;
+}
+
+.summary-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12) !important;
+}
+
+body {
+    background-color: #f8f9fa;
+}
+
+footer {
+    color: #6c757d;
+}

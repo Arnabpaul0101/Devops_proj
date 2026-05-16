@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}New Blood Request — Blood Bank MS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">New Blood Request</h2>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form action="{{ url_for('requests.new_request') }}" method="post">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Patient Name <span class="text-danger">*</span></label>
+                    <input type="text" name="patient_name" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Blood Type <span class="text-danger">*</span></label>
+                    <select name="blood_type" class="form-select" required>
+                        <option value="">Select...</option>
+                        {% for bt in blood_types %}
+                            <option value="{{ bt }}">{{ bt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Units Required <span class="text-danger">*</span></label>
+                    <input type="number" name="units_required" class="form-control" min="1" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Hospital</label>
+                    <input type="text" name="hospital" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Contact Phone <span class="text-danger">*</span></label>
+                    <input type="tel" name="contact_phone" class="form-control" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Urgency</label>
+                    <div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="urgency" value="normal" id="normal" checked>
+                            <label class="form-check-label" for="normal">Normal</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="urgency" value="urgent" id="urgent">
+                            <label class="form-check-label" for="urgent">Urgent</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="urgency" value="critical" id="critical">
+                            <label class="form-check-label" for="critical">Critical</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-danger">Submit Request</button>
+                <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

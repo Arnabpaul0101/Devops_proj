@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Register Donor — Blood Bank MS{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Register New Donor</h2>
+
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form action="{{ url_for('donors.register') }}" method="post">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Age <span class="text-danger">*</span></label>
+                    <input type="number" name="age" class="form-control" min="18" max="65" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Blood Type <span class="text-danger">*</span></label>
+                    <select name="blood_type" class="form-select" required>
+                        <option value="">Select...</option>
+                        {% for bt in blood_types %}
+                            <option value="{{ bt }}">{{ bt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Phone <span class="text-danger">*</span></label>
+                    <input type="tel" name="phone" class="form-control" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">City</label>
+                    <input type="text" name="city" class="form-control">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Donated</label>
+                    <input type="date" name="last_donated" class="form-control">
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-danger">Register Donor</button>
+                <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

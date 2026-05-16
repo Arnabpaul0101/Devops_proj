@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: bloodbank_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: bloodbank
+      MYSQL_USER: bbuser
+      MYSQL_PASSWORD: bbpassword
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: ./app
+    image: ${REGISTRY:-local}/bloodbank-app:${IMAGE_TAG:-latest}
+    container_name: bloodbank_app
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+      DB_HOST: db
+      DB_USER: bbuser
+      DB_PASSWORD: bbpassword
+      DB_NAME: bloodbank
+      SECRET_KEY: change-me-in-production
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/app
+
+volumes:
+  db_data:
