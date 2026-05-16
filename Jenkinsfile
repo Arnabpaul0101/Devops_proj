@@ -31,9 +31,6 @@ pipeline {
         }
 
         stage('Push Image') {
-            when {
-                branch 'main'
-            }
             steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'dockerhub-credentials',
@@ -49,9 +46,6 @@ pipeline {
         }
 
         stage('Deploy') {
-            when {
-                branch 'main'
-            }
             steps {
                 bat "docker-compose down --remove-orphans & exit /B 0"
                 bat "docker-compose up -d"
