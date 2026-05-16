@@ -10,7 +10,7 @@ SAMPLE_REQUEST = {
 
 
 def test_requests_list_loads(client, mocker):
-    mocker.patch('models.db.execute_query', return_value=[SAMPLE_REQUEST])
+    mocker.patch('routes.requests.execute_query', return_value=[SAMPLE_REQUEST])
     response = client.get('/requests/')
     assert response.status_code == 200
     assert b'Anita Patel' in response.data
