@@ -2,19 +2,28 @@
 {% block title %}Register Donor — Blood Bank MS{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Register New Donor</h2>
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-person-plus-fill text-danger me-2"></i>Register New Donor</h2>
+        <small class="text-muted">Add a new donor to the system</small>
+    </div>
+    <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Donors
+    </a>
+</div>
 
-<div class="card border-0 shadow-sm">
+<div class="bb-card" style="max-width: 720px;">
+    <div class="card-header"><i class="bi bi-person-vcard text-danger"></i> Donor Information</div>
     <div class="card-body">
         <form action="{{ url_for('donors.register') }}" method="post">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
-                    <input type="text" name="name" class="form-control" required>
+                    <input type="text" name="name" class="form-control" placeholder="John Doe" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Age <span class="text-danger">*</span></label>
-                    <input type="number" name="age" class="form-control" min="18" max="65" required>
+                    <input type="number" name="age" class="form-control" min="18" max="65" placeholder="25" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Blood Type <span class="text-danger">*</span></label>
@@ -27,24 +36,27 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Phone <span class="text-danger">*</span></label>
-                    <input type="tel" name="phone" class="form-control" required>
+                    <input type="tel" name="phone" class="form-control" placeholder="+1 234 567 8900" required>
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control">
+                    <input type="email" name="email" class="form-control" placeholder="donor@example.com">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">City</label>
-                    <input type="text" name="city" class="form-control">
+                    <input type="text" name="city" class="form-control" placeholder="New York">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Last Donated</label>
                     <input type="date" name="last_donated" class="form-control">
+                    <div class="form-text">Leave blank if never donated. Donors can donate again after 90 days.</div>
                 </div>
             </div>
-            <div class="mt-4">
-                <button type="submit" class="btn btn-danger">Register Donor</button>
-                <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-bb">
+                    <i class="bi bi-person-check-fill"></i> Register Donor
+                </button>
+                <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary">Cancel</a>
             </div>
         </form>
     </div>

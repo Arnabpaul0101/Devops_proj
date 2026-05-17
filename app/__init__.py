@@ -1,19 +1,75 @@
 from flask import Flask, render_template, request
+
 from config import config_map
 from models.db import execute_query
+
+
+def ensure_schema(app):
+    """Create any missing tables/columns for existing databases."""
+    if app.config.get('TESTING'):
+        return
+    with app.app_context():
+        try:
+            execute_query('''
+                CREATE TABLE IF NOT EXISTS hospitals (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    name VARCHAR(150) NOT NULL,
+                    address VARCHAR(255),
+                    phone VARCHAR(15) NOT NULL,
+                    email VARCHAR(100),
+                    city VARCHAR(50),
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''', fetch=False)
+
+            execute_query('''
+                CREATE TABLE IF NOT EXISTS inventory_history (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    blood_type VARCHAR(5) NOT NULL,
+                    change_amount INT NOT NULL,
+                    units_after INT NOT NULL,
+                    reason VARCHAR(150),
+                    recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''', fetch=False)
+
+            cols = execute_query('''
+                SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS
+                WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'blood_requests'
+            ''')
+            col_names = [c['COLUMN_NAME'] for c in cols]
+
+            if 'contact_email' not in col_names:
+                execute_query(
+                    'ALTER TABLE blood_requests ADD COLUMN contact_email VARCHAR(100)',
+                    fetch=False,
+                )
+            if 'hospital_id' not in col_names:
+                execute_query(
+                    'ALTER TABLE blood_requests ADD COLUMN hospital_id INT NULL',
+                    fetch=False,
+                )
+        except Exception as e:
+            app.logger.warning(f'Schema migration: {e}')
 
 
 def create_app(config_name='development'):
     app = Flask(__name__)
     app.config.from_object(config_map[config_name])
 
+    from routes.auth import auth_bp
     from routes.donors import donors_bp
+    from routes.hospitals import hospitals_bp
     from routes.inventory import inventory_bp
     from routes.requests import requests_bp
 
+    app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(donors_bp, url_prefix='/donors')
     app.register_blueprint(inventory_bp, url_prefix='/inventory')
     app.register_blueprint(requests_bp, url_prefix='/requests')
+    app.register_blueprint(hospitals_bp, url_prefix='/hospitals')
+
+    ensure_schema(app)
 
     @app.route('/')
     def dashboard():
@@ -22,11 +78,19 @@ def create_app(config_name='development'):
         pending_count = execute_query(
             "SELECT COUNT(*) AS cnt FROM blood_requests WHERE status='pending'"
         )[0]['cnt']
+        hospital_count = execute_query('SELECT COUNT(*) AS cnt FROM hospitals')[0]['cnt']
+        low_stock = execute_query(
+            'SELECT blood_type, units FROM blood_inventory WHERE units < 5 ORDER BY units'
+        )
+        inventory = execute_query('SELECT blood_type, units FROM blood_inventory ORDER BY blood_type')
         return render_template(
             'index.html',
             donor_count=donor_count,
             total_units=total_units,
             pending_count=pending_count,
+            hospital_count=hospital_count,
+            low_stock=low_stock,
+            inventory=inventory,
         )
 
     @app.route('/search')

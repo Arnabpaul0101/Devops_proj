@@ -2,32 +2,46 @@
 {% block title %}Donors — Blood Bank MS{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>Registered Donors</h2>
-    <a href="{{ url_for('donors.register') }}" class="btn btn-danger">+ Register Donor</a>
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-people-fill text-danger me-2"></i>Registered Donors</h2>
+        <small class="text-muted">{{ donors|length }} donor{{ 's' if donors|length != 1 }}</small>
+    </div>
+    {% if session.get('admin_logged_in') %}
+    <a href="{{ url_for('donors.register') }}" class="btn btn-bb">
+        <i class="bi bi-person-plus-fill"></i> Register Donor
+    </a>
+    {% endif %}
 </div>
 
-<form action="{{ url_for('donors.list_donors') }}" method="get" class="row g-2 mb-4">
-    <div class="col-auto">
-        <select name="blood_type" class="form-select">
-            <option value="">All Blood Types</option>
-            {% for bt in blood_types %}
-                <option value="{{ bt }}" {% if bt == selected %}selected{% endif %}>{{ bt }}</option>
-            {% endfor %}
-        </select>
+<div class="bb-card mb-4">
+    <div class="card-body">
+        <form action="{{ url_for('donors.list_donors') }}" method="get" class="row g-2 align-items-end">
+            <div class="col-sm-auto">
+                <label class="form-label">Filter by Blood Type</label>
+                <select name="blood_type" class="form-select" style="min-width:160px">
+                    <option value="">All Blood Types</option>
+                    {% for bt in blood_types %}
+                        <option value="{{ bt }}" {% if bt == selected %}selected{% endif %}>{{ bt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-auto d-flex gap-2">
+                <button type="submit" class="btn btn-bb"><i class="bi bi-funnel-fill"></i> Filter</button>
+                {% if selected %}
+                    <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i> Clear
+                    </a>
+                {% endif %}
+            </div>
+        </form>
     </div>
-    <div class="col-auto">
-        <button type="submit" class="btn btn-outline-danger">Filter</button>
-        {% if selected %}
-            <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary">Clear</a>
-        {% endif %}
-    </div>
-</form>
+</div>
 
 {% if donors %}
-<div class="table-responsive">
-    <table class="table table-striped table-hover">
-        <thead class="table-dark">
+<div class="bb-table-wrap">
+    <table class="table bb-table mb-0">
+        <thead>
             <tr>
                 <th>#</th>
                 <th>Name</th>
@@ -36,24 +50,48 @@
                 <th>Phone</th>
                 <th>City</th>
                 <th>Last Donated</th>
+                <th>Eligibility</th>
             </tr>
         </thead>
         <tbody>
             {% for d in donors %}
             <tr>
-                <td>{{ loop.index }}</td>
-                <td><a href="{{ url_for('donors.detail', donor_id=d.id) }}">{{ d.name }}</a></td>
+                <td class="text-muted">{{ loop.index }}</td>
+                <td>
+                    <a href="{{ url_for('donors.detail', donor_id=d.id) }}" class="fw-semibold text-decoration-none text-dark">
+                        {{ d.name }}
+                    </a>
+                </td>
                 <td>{{ d.age }}</td>
-                <td><span class="badge bg-danger">{{ d.blood_type }}</span></td>
+                <td><span class="blood-badge">{{ d.blood_type }}</span></td>
                 <td>{{ d.phone }}</td>
                 <td>{{ d.city or '—' }}</td>
                 <td>{{ d.last_donated or '—' }}</td>
+                <td>
+                    {% if d.eligibility == 'eligible' %}
+                        <span class="badge badge-eligible"><i class="bi bi-check-circle-fill me-1"></i>Eligible</span>
+                    {% elif d.eligibility == 'ineligible' %}
+                        <span class="badge badge-ineligible"><i class="bi bi-x-circle-fill me-1"></i>Not Eligible</span>
+                    {% else %}
+                        <span class="badge badge-unknown"><i class="bi bi-question-circle-fill me-1"></i>Unknown</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 {% else %}
-    <div class="alert alert-info">No donors found. <a href="{{ url_for('donors.register') }}">Register the first donor.</a></div>
+<div class="bb-card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-people text-muted" style="font-size:3rem"></i>
+        <p class="text-muted mt-3 mb-1">No donors found.</p>
+        {% if session.get('admin_logged_in') %}
+        <a href="{{ url_for('donors.register') }}" class="btn btn-bb mt-2">
+            <i class="bi bi-person-plus-fill"></i> Register First Donor
+        </a>
+        {% endif %}
+    </div>
+</div>
 {% endif %}
 {% endblock %}

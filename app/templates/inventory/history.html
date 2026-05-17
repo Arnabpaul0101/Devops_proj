@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+{% block title %}Inventory History — Blood Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-graph-up text-danger me-2"></i>Inventory History</h2>
+        <small class="text-muted">Stock changes over time</small>
+    </div>
+    <a href="{{ url_for('inventory.list_inventory') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Inventory
+    </a>
+</div>
+
+<div class="bb-card mb-4">
+    <div class="card-body">
+        <form action="{{ url_for('inventory.history') }}" method="get" class="d-flex align-items-end gap-3 flex-wrap">
+            <div>
+                <label class="form-label">Blood Type</label>
+                <select name="blood_type" class="form-select" style="min-width:140px">
+                    {% for bt in blood_types %}
+                        <option value="{{ bt }}" {% if bt == blood_type %}selected{% endif %}>{{ bt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-bb"><i class="bi bi-graph-up-arrow"></i> View History</button>
+        </form>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="bb-card">
+            <div class="card-header">
+                <i class="bi bi-activity text-danger"></i>
+                <span class="blood-badge ms-1">{{ blood_type }}</span> — Stock Level Over Time
+            </div>
+            <div class="card-body">
+                {% if records %}
+                    <canvas id="historyChart" height="200"></canvas>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="bi bi-graph-up text-muted" style="font-size:3rem"></i>
+                        <p class="text-muted mt-3">No history records for <strong>{{ blood_type }}</strong> yet.</p>
+                        <p class="text-muted small">Update the inventory to start tracking changes.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="bb-card h-100">
+            <div class="card-header"><i class="bi bi-clock-history text-danger"></i> Recent Changes</div>
+            <div class="card-body p-0">
+                {% if records %}
+                <ul class="list-group list-group-flush">
+                    {% for r in records %}
+                    <li class="list-group-item d-flex justify-content-between align-items-start py-3">
+                        <div>
+                            <div class="small text-muted">{{ r.recorded_at }}</div>
+                            <div class="small">{{ r.reason or 'Manual update' }}</div>
+                        </div>
+                        <div class="text-end ms-3 flex-shrink-0">
+                            <div class="fw-bold {% if r.change_amount > 0 %}text-success{% else %}text-danger{% endif %}">
+                                {% if r.change_amount > 0 %}+{% endif %}{{ r.change_amount }}
+                            </div>
+                            <div class="small text-muted">→ {{ r.units_after }}</div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <div class="text-center py-4 text-muted small">No records yet.</div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if records %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels = {{ labels | tojson }};
+const data   = {{ data   | tojson }};
+
+new Chart(document.getElementById('historyChart'), {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Units in Stock',
+            data: data,
+            borderColor: '#c62828',
+            backgroundColor: 'rgba(198,40,40,.08)',
+            borderWidth: 2.5,
+            pointBackgroundColor: '#c62828',
+            pointRadius: 4,
+            tension: 0.3,
+            fill: true,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => ` ${ctx.parsed.y} units`,
+                    title: ctx => ctx[0].label.slice(0, 16),
+                }
+            }
+        },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+            x: {
+                grid: { display: false },
+                ticks: { maxTicksLimit: 8, maxRotation: 30,
+                         callback: (_, i) => labels[i] ? labels[i].slice(0, 10) : '' }
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+{% endblock %}

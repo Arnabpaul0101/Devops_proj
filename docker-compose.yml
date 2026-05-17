@@ -35,6 +35,13 @@ services:
       DB_PASSWORD: bbpassword
       DB_NAME: bloodbank
       SECRET_KEY: change-me-in-production
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: bloodbank123
+      MAIL_SERVER: smtp.gmail.com
+      MAIL_PORT: "587"
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      MAIL_FROM: ""
     depends_on:
       db:
         condition: service_healthy

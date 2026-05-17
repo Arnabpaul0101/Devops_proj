@@ -1,5 +1,7 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+
 from models.db import execute_query
+from utils import login_required, donor_eligibility
 
 donors_bp = Blueprint('donors', __name__)
 
@@ -15,10 +17,15 @@ def list_donors():
         )
     else:
         donors = execute_query('SELECT * FROM donors ORDER BY name')
+
+    for d in donors:
+        d['eligibility'] = donor_eligibility(d.get('last_donated'))
+
     return render_template('donors/list.html', donors=donors, blood_types=BLOOD_TYPES, selected=blood_type)
 
 
 @donors_bp.route('/register', methods=['GET', 'POST'])
+@login_required
 def register():
     if request.method == 'POST':
         name = request.form.get('name', '').strip()
@@ -50,4 +57,6 @@ def detail(donor_id):
     rows = execute_query('SELECT * FROM donors WHERE id = %s', (donor_id,))
     if not rows:
         return render_template('404.html'), 404
-    return render_template('donors/detail.html', donor=rows[0])
+    donor = rows[0]
+    donor['eligibility'] = donor_eligibility(donor.get('last_donated'))
+    return render_template('donors/detail.html', donor=donor)
