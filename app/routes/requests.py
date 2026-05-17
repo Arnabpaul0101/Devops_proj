@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 
 from models.db import execute_query
-from utils import login_required, send_notification
+from utils import login_required
 
 requests_bp = Blueprint('requests', __name__)
 
@@ -27,7 +27,6 @@ def new_request():
         hospital = request.form.get('hospital', '').strip()
         hospital_id = request.form.get('hospital_id') or None
         contact_phone = request.form.get('contact_phone', '').strip()
-        contact_email = request.form.get('contact_email', '').strip()
         urgency = request.form.get('urgency', 'normal')
 
         if not patient_name or not blood_type or not units_required or not contact_phone:
@@ -37,11 +36,10 @@ def new_request():
         execute_query(
             '''INSERT INTO blood_requests
                (patient_name, blood_type, units_required, hospital, hospital_id,
-                contact_phone, contact_email, urgency)
-               VALUES (%s, %s, %s, %s, %s, %s, %s, %s)''',
+                contact_phone, urgency)
+               VALUES (%s, %s, %s, %s, %s, %s, %s)''',
             (patient_name, blood_type, int(units_required),
-             hospital or None, hospital_id, contact_phone,
-             contact_email or None, urgency),
+             hospital or None, hospital_id, contact_phone, urgency),
             fetch=False,
         )
         flash(f'Blood request for {patient_name} submitted!', 'success')
@@ -79,21 +77,6 @@ def approve(request_id):
         "UPDATE blood_requests SET status='approved', resolved_at=%s WHERE id=%s",
         (datetime.now(), request_id), fetch=False,
     )
-
-    if req.get('contact_email'):
-        send_notification(
-            subject=f'Blood Request #{request_id} Approved',
-            recipient=req['contact_email'],
-            body_html=f'''
-                <h2 style="color:#2ecc71;">Your blood request has been approved!</h2>
-                <p>Dear <strong>{req["patient_name"]}</strong>,</p>
-                <p>Your request for <strong>{req["units_required"]} units of {req["blood_type"]}</strong>
-                   has been <strong style="color:#2ecc71;">approved</strong>.</p>
-                <p>Please contact the blood bank to arrange collection.</p>
-                <br><p>Blood Bank Management System</p>
-            ''',
-        )
-
     flash(f'Request #{request_id} approved. Inventory updated.', 'success')
     return redirect(url_for('requests.list_requests'))
 
@@ -101,22 +84,6 @@ def approve(request_id):
 @requests_bp.route('/reject/<int:request_id>', methods=['POST'])
 @login_required
 def reject(request_id):
-    rows = execute_query('SELECT * FROM blood_requests WHERE id = %s', (request_id,))
-    if rows and rows[0].get('contact_email'):
-        req = rows[0]
-        send_notification(
-            subject=f'Blood Request #{request_id} Update',
-            recipient=req['contact_email'],
-            body_html=f'''
-                <h2 style="color:#e74c3c;">Blood Request Update</h2>
-                <p>Dear <strong>{req["patient_name"]}</strong>,</p>
-                <p>Unfortunately, your request for <strong>{req["units_required"]} units of
-                   {req["blood_type"]}</strong> could not be fulfilled at this time.</p>
-                <p>Please contact us for further assistance.</p>
-                <br><p>Blood Bank Management System</p>
-            ''',
-        )
-
     execute_query(
         "UPDATE blood_requests SET status='rejected', resolved_at=%s WHERE id=%s",
         (datetime.now(), request_id), fetch=False,

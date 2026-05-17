@@ -10,11 +10,6 @@ class DevelopmentConfig:
     DB_NAME = os.environ.get('DB_NAME', 'bloodbank')
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
-    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_FROM = os.environ.get('MAIL_FROM', os.environ.get('MAIL_USERNAME', ''))
 
 
 class TestingConfig:
@@ -28,9 +23,6 @@ class TestingConfig:
     ADMIN_USERNAME = 'admin'
     ADMIN_PASSWORD = 'admin123'
     BYPASS_LOGIN = True
-    MAIL_SERVER = None
-    MAIL_USERNAME = None
-    MAIL_PASSWORD = None
 
 
 class ProductionConfig:
@@ -42,11 +34,6 @@ class ProductionConfig:
     DB_NAME = os.environ.get('DB_NAME')
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
-    MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.gmail.com')
-    MAIL_PORT = int(os.environ.get('MAIL_PORT', 587))
-    MAIL_USERNAME = os.environ.get('MAIL_USERNAME')
-    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
-    MAIL_FROM = os.environ.get('MAIL_FROM', os.environ.get('MAIL_USERNAME', ''))
 
 
 config_map = {
