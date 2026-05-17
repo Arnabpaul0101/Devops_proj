@@ -15,7 +15,7 @@ def test_inventory_page_loads(client, mocker):
 
 
 def test_update_form_loads(client, mocker):
-    mocker.patch('models.db.execute_query', return_value=[SAMPLE_INVENTORY[0]])
+    mocker.patch('routes.inventory.execute_query', return_value=[SAMPLE_INVENTORY[0]])
     response = client.get('/inventory/update/A+')
     assert response.status_code == 200
     assert b'Update Inventory' in response.data
