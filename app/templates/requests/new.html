@@ -2,15 +2,24 @@
 {% block title %}New Blood Request — Blood Bank MS{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">New Blood Request</h2>
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-clipboard2-plus-fill text-danger me-2"></i>New Blood Request</h2>
+        <small class="text-muted">Submit a blood requirement</small>
+    </div>
+    <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Requests
+    </a>
+</div>
 
-<div class="card border-0 shadow-sm">
+<div class="bb-card" style="max-width: 760px;">
+    <div class="card-header"><i class="bi bi-clipboard2-pulse text-danger"></i> Request Details</div>
     <div class="card-body">
         <form action="{{ url_for('requests.new_request') }}" method="post">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Patient Name <span class="text-danger">*</span></label>
-                    <input type="text" name="patient_name" class="form-control" required>
+                    <input type="text" name="patient_name" class="form-control" placeholder="Full name" required>
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Blood Type <span class="text-danger">*</span></label>
@@ -23,39 +32,74 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label">Units Required <span class="text-danger">*</span></label>
-                    <input type="number" name="units_required" class="form-control" min="1" required>
+                    <input type="number" name="units_required" class="form-control" min="1" placeholder="1" required>
                 </div>
+
                 <div class="col-md-6">
                     <label class="form-label">Hospital</label>
-                    <input type="text" name="hospital" class="form-control">
+                    <select name="hospital_id" class="form-select" onchange="fillHospitalName(this)">
+                        <option value="">Select registered hospital...</option>
+                        {% for h in hospitals %}
+                            <option value="{{ h.id }}" data-name="{{ h.name }}">{{ h.name }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Contact Phone <span class="text-danger">*</span></label>
-                    <input type="tel" name="contact_phone" class="form-control" required>
+                    <label class="form-label">Hospital Name <span class="text-muted small">(or type manually)</span></label>
+                    <input type="text" name="hospital" id="hospitalName" class="form-control" placeholder="Hospital name">
                 </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Contact Phone <span class="text-danger">*</span></label>
+                    <input type="tel" name="contact_phone" class="form-control" placeholder="+1 234 567 8900" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Contact Email</label>
+                    <input type="email" name="contact_email" class="form-control" placeholder="notify@example.com">
+                    <div class="form-text">You'll receive approval/rejection notifications at this address.</div>
+                </div>
+
                 <div class="col-12">
                     <label class="form-label">Urgency</label>
-                    <div>
-                        <div class="form-check form-check-inline">
+                    <div class="d-flex gap-4 mt-1">
+                        <div class="form-check">
                             <input class="form-check-input" type="radio" name="urgency" value="normal" id="normal" checked>
-                            <label class="form-check-label" for="normal">Normal</label>
+                            <label class="form-check-label" for="normal">
+                                <span class="badge bg-secondary">Normal</span>
+                            </label>
                         </div>
-                        <div class="form-check form-check-inline">
+                        <div class="form-check">
                             <input class="form-check-input" type="radio" name="urgency" value="urgent" id="urgent">
-                            <label class="form-check-label" for="urgent">Urgent</label>
+                            <label class="form-check-label" for="urgent">
+                                <span class="badge bg-warning text-dark">Urgent</span>
+                            </label>
                         </div>
-                        <div class="form-check form-check-inline">
+                        <div class="form-check">
                             <input class="form-check-input" type="radio" name="urgency" value="critical" id="critical">
-                            <label class="form-check-label" for="critical">Critical</label>
+                            <label class="form-check-label" for="critical">
+                                <span class="badge bg-danger">Critical</span>
+                            </label>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="mt-4">
-                <button type="submit" class="btn btn-danger">Submit Request</button>
-                <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-secondary ms-2">Cancel</a>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-bb">
+                    <i class="bi bi-send-fill"></i> Submit Request
+                </button>
+                <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-secondary">Cancel</a>
             </div>
         </form>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function fillHospitalName(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    document.getElementById('hospitalName').value = opt.dataset.name || '';
+}
+</script>
 {% endblock %}

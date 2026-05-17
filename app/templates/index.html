@@ -2,60 +2,136 @@
 {% block title %}Dashboard — Blood Bank MS{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Dashboard</h2>
 
-<div class="row g-4 mb-5">
-    <div class="col-md-4">
-        <div class="card summary-card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-                <div class="display-4 fw-bold text-danger">{{ donor_count }}</div>
-                <p class="card-text text-muted mt-2">Registered Donors</p>
-                <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-danger btn-sm mt-2">View All</a>
+{% if low_stock %}
+<div class="low-stock-banner">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <div>
+        <strong>Low Stock Alert:</strong>
+        {% for item in low_stock %}
+            <span class="badge bg-light text-danger ms-1">{{ item.blood_type }} ({{ item.units }} units)</span>
+        {% endfor %}
+        &nbsp;&mdash; Immediate restocking required!
+    </div>
+</div>
+{% endif %}
+
+<div class="page-header">
+    <h2><i class="bi bi-speedometer2 text-danger me-2"></i>Dashboard</h2>
+    <small class="text-muted">Overview of blood bank operations</small>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon red"><i class="bi bi-people-fill"></i></div>
+            <div>
+                <div class="stat-value">{{ donor_count }}</div>
+                <div class="stat-label">Registered Donors</div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card summary-card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-                <div class="display-4 fw-bold text-success">{{ total_units }}</div>
-                <p class="card-text text-muted mt-2">Total Blood Units in Stock</p>
-                <a href="{{ url_for('inventory.list_inventory') }}" class="btn btn-outline-success btn-sm mt-2">View Inventory</a>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="bi bi-droplet-fill"></i></div>
+            <div>
+                <div class="stat-value">{{ total_units }}</div>
+                <div class="stat-label">Total Units in Stock</div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card summary-card border-0 shadow-sm h-100">
-            <div class="card-body text-center">
-                <div class="display-4 fw-bold text-warning">{{ pending_count }}</div>
-                <p class="card-text text-muted mt-2">Pending Blood Requests</p>
-                <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-warning btn-sm mt-2">View Requests</a>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon amber"><i class="bi bi-clipboard2-pulse-fill"></i></div>
+            <div>
+                <div class="stat-value">{{ pending_count }}</div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="bi bi-hospital-fill"></i></div>
+            <div>
+                <div class="stat-value">{{ hospital_count }}</div>
+                <div class="stat-label">Registered Hospitals</div>
             </div>
         </div>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm">
-    <div class="card-body">
-        <h5 class="card-title">Quick Blood Type Search</h5>
-        <form action="{{ url_for('search') }}" method="get" class="row g-2">
-            <div class="col-auto">
-                <select name="q" class="form-select">
-                    <option value="">Select blood type...</option>
-                    {% for bt in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}
-                        <option value="{{ bt }}">{{ bt }}</option>
-                    {% endfor %}
-                </select>
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="bb-card h-100">
+            <div class="card-header">
+                <i class="bi bi-bar-chart-fill text-danger"></i> Blood Inventory Overview
             </div>
-            <div class="col-auto">
-                <select name="type" class="form-select">
-                    <option value="donor">Search Donors</option>
-                    <option value="inventory">Search Inventory</option>
-                </select>
+            <div class="card-body">
+                <canvas id="inventoryChart" height="180"></canvas>
             </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-danger">Search</button>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="bb-card h-100">
+            <div class="card-header">
+                <i class="bi bi-search text-danger"></i> Quick Blood Type Search
             </div>
-        </form>
+            <div class="card-body">
+                <form action="{{ url_for('search') }}" method="get">
+                    <div class="mb-3">
+                        <label class="form-label">Blood Type</label>
+                        <select name="q" class="form-select">
+                            <option value="">Select blood type...</option>
+                            {% for bt in ['A+','A-','B+','B-','AB+','AB-','O+','O-'] %}
+                                <option value="{{ bt }}">{{ bt }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Search In</label>
+                        <select name="type" class="form-select">
+                            <option value="donor">Donors</option>
+                            <option value="inventory">Inventory</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-bb w-100">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const labels = {{ inventory | map(attribute='blood_type') | list | tojson }};
+const units  = {{ inventory | map(attribute='units') | list | tojson }};
+const colors = units.map(u => u < 5 ? '#e53935' : u < 15 ? '#fb8c00' : '#43a047');
+
+new Chart(document.getElementById('inventoryChart'), {
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Units Available',
+            data: units,
+            backgroundColor: colors,
+            borderRadius: 8,
+            borderSkipped: false,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, grid: { color: '#f0f0f0' } },
+            x: { grid: { display: false } }
+        }
+    }
+});
+</script>
 {% endblock %}

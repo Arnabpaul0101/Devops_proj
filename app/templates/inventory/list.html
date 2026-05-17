@@ -2,49 +2,67 @@
 {% block title %}Blood Inventory — Blood Bank MS{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Blood Inventory</h2>
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-droplet-half text-danger me-2"></i>Blood Inventory</h2>
+        <small class="text-muted">Current stock levels by blood type</small>
+    </div>
+    <a href="{{ url_for('inventory.history') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-graph-up"></i> View History
+    </a>
+</div>
 
-<div class="table-responsive">
-    <table class="table table-bordered">
-        <thead class="table-dark">
+<div class="bb-table-wrap">
+    <table class="table bb-table mb-0">
+        <thead>
             <tr>
                 <th>Blood Type</th>
                 <th>Units Available</th>
                 <th>Status</th>
                 <th>Last Updated</th>
-                <th>Action</th>
+                {% if session.get('admin_logged_in') %}<th>Action</th>{% endif %}
             </tr>
         </thead>
         <tbody>
             {% for item in inventory %}
                 {% if item.units < 5 %}
-                    {% set row_class = 'table-danger' %}
-                    {% set status_badge = '<span class="badge bg-danger">Critical</span>' %}
+                    {% set row_class = 'inv-critical' %}
+                    {% set status_html %}
+                        <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Critical</span>
+                    {% endset %}
                 {% elif item.units < 15 %}
-                    {% set row_class = 'table-warning' %}
-                    {% set status_badge = '<span class="badge bg-warning text-dark">Low</span>' %}
+                    {% set row_class = 'inv-low' %}
+                    {% set status_html %}
+                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill me-1"></i>Low</span>
+                    {% endset %}
                 {% else %}
-                    {% set row_class = 'table-success' %}
-                    {% set status_badge = '<span class="badge bg-success">Good</span>' %}
+                    {% set row_class = 'inv-good' %}
+                    {% set status_html %}
+                        <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Good</span>
+                    {% endset %}
                 {% endif %}
             <tr class="{{ row_class }}">
-                <td><strong>{{ item.blood_type }}</strong></td>
-                <td>{{ item.units }}</td>
-                <td>{{ status_badge | safe }}</td>
-                <td>{{ item.updated_at }}</td>
+                <td><span class="blood-badge">{{ item.blood_type }}</span></td>
+                <td><strong>{{ item.units }}</strong> <span class="text-muted small">units</span></td>
+                <td>{{ status_html }}</td>
+                <td class="text-muted small">{{ item.updated_at }}</td>
+                {% if session.get('admin_logged_in') %}
                 <td>
                     <a href="{{ url_for('inventory.update', blood_type=item.blood_type) }}"
-                       class="btn btn-sm btn-outline-dark">Update</a>
+                       class="btn btn-sm btn-bb">
+                        <i class="bi bi-pencil-fill"></i> Update
+                    </a>
                 </td>
+                {% endif %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 
-<div class="mt-3">
-    <span class="badge bg-danger me-2">Critical</span> &lt; 5 units &nbsp;
-    <span class="badge bg-warning text-dark me-2">Low</span> 5–14 units &nbsp;
-    <span class="badge bg-success me-2">Good</span> 15+ units
+<div class="mt-3 d-flex gap-3 flex-wrap">
+    <span class="badge bg-danger py-2 px-3"><i class="bi bi-exclamation-triangle-fill me-1"></i>Critical — &lt; 5 units</span>
+    <span class="badge bg-warning text-dark py-2 px-3"><i class="bi bi-exclamation-circle-fill me-1"></i>Low — 5–14 units</span>
+    <span class="badge bg-success py-2 px-3"><i class="bi bi-check-circle-fill me-1"></i>Good — 15+ units</span>
 </div>
 {% endblock %}

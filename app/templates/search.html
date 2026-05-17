@@ -2,53 +2,86 @@
 {% block title %}Search Results — Blood Bank MS{% endblock %}
 
 {% block content %}
-<h2 class="mb-4">Search Results</h2>
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-search text-danger me-2"></i>Search Results</h2>
+        {% if q %}
+        <small class="text-muted">
+            Blood type <strong>{{ q }}</strong> in
+            <strong>{{ 'donors' if search_type == 'donor' else 'inventory' }}</strong>
+        </small>
+        {% endif %}
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
 
 {% if q %}
-    <p class="text-muted">
-        Showing results for blood type <strong>{{ q }}</strong>
-        ({{ 'donors' if search_type == 'donor' else 'inventory' }})
-    </p>
-
     {% if results %}
         {% if search_type == 'donor' %}
-            <table class="table table-striped">
-                <thead class="table-dark">
+        <div class="bb-table-wrap">
+            <table class="table bb-table mb-0">
+                <thead>
                     <tr><th>Name</th><th>Age</th><th>Blood Type</th><th>Phone</th><th>City</th></tr>
                 </thead>
                 <tbody>
                     {% for d in results %}
                     <tr>
-                        <td><a href="{{ url_for('donors.detail', donor_id=d.id) }}">{{ d.name }}</a></td>
+                        <td>
+                            <a href="{{ url_for('donors.detail', donor_id=d.id) }}"
+                               class="fw-semibold text-decoration-none text-dark">{{ d.name }}</a>
+                        </td>
                         <td>{{ d.age }}</td>
-                        <td><span class="badge bg-danger">{{ d.blood_type }}</span></td>
+                        <td><span class="blood-badge">{{ d.blood_type }}</span></td>
                         <td>{{ d.phone }}</td>
                         <td>{{ d.city or '—' }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
         {% else %}
-            <table class="table table-striped">
-                <thead class="table-dark">
-                    <tr><th>Blood Type</th><th>Units Available</th></tr>
+        <div class="bb-table-wrap">
+            <table class="table bb-table mb-0">
+                <thead>
+                    <tr><th>Blood Type</th><th>Units Available</th><th>Status</th></tr>
                 </thead>
                 <tbody>
                     {% for item in results %}
-                    <tr>
-                        <td><span class="badge bg-danger">{{ item.blood_type }}</span></td>
-                        <td>{{ item.units }}</td>
+                    <tr class="{% if item.units < 5 %}inv-critical{% elif item.units < 15 %}inv-low{% else %}inv-good{% endif %}">
+                        <td><span class="blood-badge">{{ item.blood_type }}</span></td>
+                        <td><strong>{{ item.units }}</strong> units</td>
+                        <td>
+                            {% if item.units < 5 %}
+                                <span class="badge bg-danger">Critical</span>
+                            {% elif item.units < 15 %}
+                                <span class="badge bg-warning text-dark">Low</span>
+                            {% else %}
+                                <span class="badge bg-success">Good</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
         {% endif %}
     {% else %}
-        <div class="alert alert-info">No results found for blood type <strong>{{ q }}</strong>.</div>
+    <div class="bb-card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-search text-muted" style="font-size:3rem"></i>
+            <p class="text-muted mt-3">No results found for blood type <strong>{{ q }}</strong>.</p>
+        </div>
+    </div>
     {% endif %}
 {% else %}
-    <div class="alert alert-secondary">Use the search form on the Dashboard to find donors or inventory by blood type.</div>
+<div class="bb-card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-search text-muted" style="font-size:3rem"></i>
+        <p class="text-muted mt-3">Use the search form on the Dashboard to find donors or inventory by blood type.</p>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-bb mt-2">Go to Dashboard</a>
+    </div>
+</div>
 {% endif %}
-
-<a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary mt-3">Back to Dashboard</a>
 {% endblock %}
