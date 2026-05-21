@@ -8,7 +8,7 @@ def ensure_schema(app):
     """Create any missing tables/columns for existing databases."""
     if app.config.get('TESTING'):
         return
-    with app.app_context():
+    with app.app_context(): 
         try:
             execute_query('''
                 CREATE TABLE IF NOT EXISTS hospitals (
