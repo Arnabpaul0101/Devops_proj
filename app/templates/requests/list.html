@@ -1,27 +1,27 @@
 {% extends 'base.html' %}
-{% block title %}Blood Requests — Blood Bank MS{% endblock %}
+{% block title %}Food Requests — Food Bank MS{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div>
-        <h2><i class="bi bi-clipboard2-pulse-fill text-danger me-2"></i>Blood Requests</h2>
-        <small class="text-muted">{{ blood_requests|length }} total request{{ 's' if blood_requests|length != 1 }}</small>
+        <h2><i class="bi bi-clipboard2-check-fill text-danger me-2"></i>Food Requests</h2>
+        <small class="text-muted">{{ food_requests|length }} total request{{ 's' if food_requests|length != 1 }}</small>
     </div>
     <a href="{{ url_for('requests.new_request') }}" class="btn btn-bb">
         <i class="bi bi-plus-lg"></i> New Request
     </a>
 </div>
 
-{% if blood_requests %}
+{% if food_requests %}
 <div class="bb-table-wrap">
     <table class="table bb-table mb-0">
         <thead>
             <tr>
                 <th>#</th>
-                <th>Patient</th>
-                <th>Blood Type</th>
+                <th>Beneficiary</th>
+                <th>Food Category</th>
                 <th>Units</th>
-                <th>Hospital</th>
+                <th>Agency</th>
                 <th>Urgency</th>
                 <th>Status</th>
                 <th>Requested</th>
@@ -29,13 +29,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for r in blood_requests %}
+            {% for r in food_requests %}
             <tr>
                 <td class="text-muted">{{ r.id }}</td>
-                <td class="fw-semibold">{{ r.patient_name }}</td>
-                <td><span class="blood-badge">{{ r.blood_type }}</span></td>
+                <td class="fw-semibold">{{ r.beneficiary_name }}</td>
+                <td><span class="category-badge">{{ r.food_category }}</span></td>
                 <td>{{ r.units_required }}</td>
-                <td>{{ r.hospital or '—' }}</td>
+                <td>{{ r.agency or '—' }}</td>
                 <td>
                     {% if r.urgency == 'critical' %}
                         <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Critical</span>
@@ -81,8 +81,8 @@
 {% else %}
 <div class="bb-card">
     <div class="card-body text-center py-5">
-        <i class="bi bi-clipboard2-pulse text-muted" style="font-size:3rem"></i>
-        <p class="text-muted mt-3 mb-1">No blood requests yet.</p>
+        <i class="bi bi-clipboard2-check text-muted" style="font-size:3rem"></i>
+        <p class="text-muted mt-3 mb-1">No food requests yet.</p>
         <a href="{{ url_for('requests.new_request') }}" class="btn btn-bb mt-2">
             <i class="bi bi-plus-lg"></i> Submit First Request
         </a>

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Blood Inventory — Blood Bank MS{% endblock %}
+{% block title %}Food Inventory — Food Bank MS{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div>
-        <h2><i class="bi bi-droplet-half text-danger me-2"></i>Blood Inventory</h2>
-        <small class="text-muted">Current stock levels by blood type</small>
+        <h2><i class="bi bi-basket2 text-danger me-2"></i>Food Inventory</h2>
+        <small class="text-muted">Current stock levels by food category</small>
     </div>
     <a href="{{ url_for('inventory.history') }}" class="btn btn-outline-secondary">
         <i class="bi bi-graph-up"></i> View History
@@ -16,7 +16,7 @@
     <table class="table bb-table mb-0">
         <thead>
             <tr>
-                <th>Blood Type</th>
+                <th>Food Category</th>
                 <th>Units Available</th>
                 <th>Status</th>
                 <th>Last Updated</th>
@@ -42,13 +42,13 @@
                     {% endset %}
                 {% endif %}
             <tr class="{{ row_class }}">
-                <td><span class="blood-badge">{{ item.blood_type }}</span></td>
+                <td><span class="category-badge">{{ item.food_category }}</span></td>
                 <td><strong>{{ item.units }}</strong> <span class="text-muted small">units</span></td>
                 <td>{{ status_html }}</td>
                 <td class="text-muted small">{{ item.updated_at }}</td>
                 {% if session.get('admin_logged_in') %}
                 <td>
-                    <a href="{{ url_for('inventory.update', blood_type=item.blood_type) }}"
+                    <a href="{{ url_for('inventory.update', food_category=item.food_category) }}"
                        class="btn btn-sm btn-bb">
                         <i class="bi bi-pencil-fill"></i> Update
                     </a>

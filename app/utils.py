@@ -16,14 +16,14 @@ def login_required(f):
     return decorated
 
 
-def donor_eligibility(last_donated):
-    if last_donated is None:
+def contribution_status(last_contributed):
+    if last_contributed is None:
         return 'unknown'
-    if isinstance(last_donated, str):
+    if isinstance(last_contributed, str):
         from datetime import datetime
         try:
-            last_donated = datetime.strptime(str(last_donated), '%Y-%m-%d').date()
+            last_contributed = datetime.strptime(str(last_contributed), '%Y-%m-%d').date()
         except ValueError:
             return 'unknown'
-    days = (date.today() - last_donated).days
+    days = (date.today() - last_contributed).days
     return 'eligible' if days >= 90 else 'ineligible'

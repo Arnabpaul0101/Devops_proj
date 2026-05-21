@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'bloodbank-app'
+        IMAGE_NAME = 'foodbank-app'
         IMAGE_TAG  = "${BUILD_NUMBER}"
         REGISTRY   = 'mohak0039'
     }

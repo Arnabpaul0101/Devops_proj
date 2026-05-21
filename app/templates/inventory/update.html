@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Update Inventory — Blood Bank MS{% endblock %}
+{% block title %}Update Inventory — Food Bank MS{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div>
         <h2><i class="bi bi-pencil-square text-danger me-2"></i>Update Inventory</h2>
-        <small class="text-muted">Adjust stock for <span class="blood-badge ms-1">{{ item.blood_type }}</span></small>
+        <small class="text-muted">Adjust stock for <span class="category-badge ms-1">{{ item.food_category }}</span></small>
     </div>
     <a href="{{ url_for('inventory.list_inventory') }}" class="btn btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Back to Inventory
@@ -17,7 +17,7 @@
         <div class="bb-card">
             <div class="card-header"><i class="bi bi-info-circle text-danger"></i> Current Status</div>
             <div class="card-body text-center py-4">
-                <div class="blood-badge mb-3" style="font-size:1.4rem;padding:.5rem 1.2rem;">{{ item.blood_type }}</div>
+                <div class="category-badge mb-3" style="font-size:1.4rem;padding:.5rem 1.2rem;">{{ item.food_category }}</div>
                 <div class="stat-value mb-1">{{ item.units }}</div>
                 <div class="stat-label">Units Currently in Stock</div>
                 {% if item.units < 5 %}
@@ -35,7 +35,7 @@
         <div class="bb-card">
             <div class="card-header"><i class="bi bi-sliders text-danger"></i> Adjust Stock</div>
             <div class="card-body">
-                <form action="{{ url_for('inventory.update', blood_type=item.blood_type) }}" method="post">
+                <form action="{{ url_for('inventory.update', food_category=item.food_category) }}" method="post">
                     <div class="mb-4">
                         <label class="form-label">Action</label>
                         <div class="d-flex gap-3">

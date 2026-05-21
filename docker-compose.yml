@@ -1,14 +1,14 @@
-version: '3.8'
+name: food-bank-devops
 
 services:
   db:
     image: mysql:8.0
-    container_name: bloodbank_db
+    container_name: foodbank_db
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: bloodbank
-      MYSQL_USER: bbuser
-      MYSQL_PASSWORD: bbpassword
+      MYSQL_DATABASE: foodbank
+      MYSQL_USER: fbuser
+      MYSQL_PASSWORD: fbpassword
     volumes:
       - db_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -24,19 +24,19 @@ services:
     build:
       context: .
       dockerfile: app/Dockerfile
-    image: ${REGISTRY:-local}/bloodbank-app:${IMAGE_TAG:-latest}
-    container_name: bloodbank_app
+    image: ${REGISTRY:-local}/foodbank-app:${IMAGE_TAG:-latest}
+    container_name: foodbank_app
     ports:
       - "5000:5000"
     environment:
       FLASK_ENV: development
       DB_HOST: db
-      DB_USER: bbuser
-      DB_PASSWORD: bbpassword
-      DB_NAME: bloodbank
+      DB_USER: fbuser
+      DB_PASSWORD: fbpassword
+      DB_NAME: foodbank
       SECRET_KEY: change-me-in-production
       ADMIN_USERNAME: admin
-      ADMIN_PASSWORD: bloodbank123
+      ADMIN_PASSWORD: foodbank123
     depends_on:
       db:
         condition: service_healthy

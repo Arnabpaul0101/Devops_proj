@@ -5,21 +5,24 @@ from utils import login_required
 
 inventory_bp = Blueprint('inventory', __name__)
 
-BLOOD_TYPES = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
+FOOD_CATEGORIES = [
+    'Rice', 'Wheat', 'Pulses', 'Canned Food',
+    'Cooking Oil', 'Milk Powder', 'Baby Food', 'Hygiene Kits',
+]
 
 
 @inventory_bp.route('/')
 def list_inventory():
-    inventory = execute_query('SELECT * FROM blood_inventory ORDER BY blood_type')
+    inventory = execute_query('SELECT * FROM food_inventory ORDER BY food_category')
     return render_template('inventory/list.html', inventory=inventory)
 
 
-@inventory_bp.route('/update/<blood_type>', methods=['GET', 'POST'])
+@inventory_bp.route('/update/<food_category>', methods=['GET', 'POST'])
 @login_required
-def update(blood_type):
-    rows = execute_query('SELECT * FROM blood_inventory WHERE blood_type = %s', (blood_type,))
+def update(food_category):
+    rows = execute_query('SELECT * FROM food_inventory WHERE food_category = %s', (food_category,))
     if not rows:
-        flash(f'Blood type {blood_type} not found.', 'danger')
+        flash(f'Food category {food_category} not found.', 'danger')
         return redirect(url_for('inventory.list_inventory'))
 
     item = rows[0]
@@ -36,16 +39,16 @@ def update(blood_type):
             change = -(item['units'] - new_units)
 
         execute_query(
-            'UPDATE blood_inventory SET units = %s WHERE blood_type = %s',
-            (new_units, blood_type),
+            'UPDATE food_inventory SET units = %s WHERE food_category = %s',
+            (new_units, food_category),
             fetch=False,
         )
         execute_query(
-            'INSERT INTO inventory_history (blood_type, change_amount, units_after, reason) VALUES (%s, %s, %s, %s)',
-            (blood_type, change, new_units, 'Manual update'),
+            'INSERT INTO inventory_history (food_category, change_amount, units_after, reason) VALUES (%s, %s, %s, %s)',
+            (food_category, change, new_units, 'Manual update'),
             fetch=False,
         )
-        flash(f'{blood_type} inventory updated to {new_units} units.', 'success')
+        flash(f'{food_category} inventory updated to {new_units} units.', 'success')
         return redirect(url_for('inventory.list_inventory'))
 
     return render_template('inventory/update.html', item=item)
@@ -53,17 +56,17 @@ def update(blood_type):
 
 @inventory_bp.route('/history')
 def history():
-    blood_type = request.args.get('blood_type', 'A+')
+    food_category = request.args.get('food_category', 'Rice')
     records = execute_query(
-        'SELECT * FROM inventory_history WHERE blood_type = %s ORDER BY recorded_at DESC LIMIT 30',
-        (blood_type,),
+        'SELECT * FROM inventory_history WHERE food_category = %s ORDER BY recorded_at DESC LIMIT 30',
+        (food_category,),
     )
     labels = [str(r['recorded_at']) for r in reversed(records)]
     data = [r['units_after'] for r in reversed(records)]
     return render_template(
         'inventory/history.html',
-        blood_type=blood_type,
-        blood_types=BLOOD_TYPES,
+        food_category=food_category,
+        food_categories=FOOD_CATEGORIES,
         records=records,
         labels=labels,
         data=data,

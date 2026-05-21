@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}Inventory History — Blood Bank MS{% endblock %}
+{% block title %}Inventory History — Food Bank MS{% endblock %}
 
 {% block content %}
 <div class="page-header">
@@ -16,10 +16,10 @@
     <div class="card-body">
         <form action="{{ url_for('inventory.history') }}" method="get" class="d-flex align-items-end gap-3 flex-wrap">
             <div>
-                <label class="form-label">Blood Type</label>
-                <select name="blood_type" class="form-select" style="min-width:140px">
-                    {% for bt in blood_types %}
-                        <option value="{{ bt }}" {% if bt == blood_type %}selected{% endif %}>{{ bt }}</option>
+                <label class="form-label">Food Category</label>
+                <select name="food_category" class="form-select" style="min-width:140px">
+                    {% for bt in food_categories %}
+                        <option value="{{ bt }}" {% if bt == food_category %}selected{% endif %}>{{ bt }}</option>
                     {% endfor %}
                 </select>
             </div>
@@ -33,7 +33,7 @@
         <div class="bb-card">
             <div class="card-header">
                 <i class="bi bi-activity text-danger"></i>
-                <span class="blood-badge ms-1">{{ blood_type }}</span> — Stock Level Over Time
+                <span class="category-badge ms-1">{{ food_category }}</span> — Stock Level Over Time
             </div>
             <div class="card-body">
                 {% if records %}
@@ -41,7 +41,7 @@
                 {% else %}
                     <div class="text-center py-5">
                         <i class="bi bi-graph-up text-muted" style="font-size:3rem"></i>
-                        <p class="text-muted mt-3">No history records for <strong>{{ blood_type }}</strong> yet.</p>
+                        <p class="text-muted mt-3">No history records for <strong>{{ food_category }}</strong> yet.</p>
                         <p class="text-muted small">Update the inventory to start tracking changes.</p>
                     </div>
                 {% endif %}

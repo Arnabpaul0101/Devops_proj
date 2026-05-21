@@ -5,9 +5,9 @@ class DevelopmentConfig:
     DEBUG = True
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key')
     DB_HOST = os.environ.get('DB_HOST', 'localhost')
-    DB_USER = os.environ.get('DB_USER', 'bbuser')
-    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'bbpassword')
-    DB_NAME = os.environ.get('DB_NAME', 'bloodbank')
+    DB_USER = os.environ.get('DB_USER', 'fbuser')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', 'fbpassword')
+    DB_NAME = os.environ.get('DB_NAME', 'foodbank')
     ADMIN_USERNAME = os.environ.get('ADMIN_USERNAME', 'admin')
     ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', 'admin123')
 

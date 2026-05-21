@@ -1,26 +1,26 @@
 {% extends 'base.html' %}
-{% block title %}Hospitals — Blood Bank MS{% endblock %}
+{% block title %}Agencies — Food Bank MS{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div>
-        <h2><i class="bi bi-hospital-fill text-danger me-2"></i>Registered Hospitals</h2>
-        <small class="text-muted">{{ hospitals|length }} hospital{{ 's' if hospitals|length != 1 }}</small>
+        <h2><i class="bi bi-building-fill text-danger me-2"></i>Registered Agencies</h2>
+        <small class="text-muted">{{ agencies|length }} agency{{ 's' if agencies|length != 1 }}</small>
     </div>
     {% if session.get('admin_logged_in') %}
-    <a href="{{ url_for('hospitals.register') }}" class="btn btn-bb">
-        <i class="bi bi-plus-lg"></i> Register Hospital
+    <a href="{{ url_for('agencies.register') }}" class="btn btn-bb">
+        <i class="bi bi-plus-lg"></i> Register Agency
     </a>
     {% endif %}
 </div>
 
-{% if hospitals %}
+{% if agencies %}
 <div class="bb-table-wrap">
     <table class="table bb-table mb-0">
         <thead>
             <tr>
                 <th>#</th>
-                <th>Hospital Name</th>
+                <th>Agency Name</th>
                 <th>City</th>
                 <th>Phone</th>
                 <th>Email</th>
@@ -29,17 +29,17 @@
             </tr>
         </thead>
         <tbody>
-            {% for h in hospitals %}
+            {% for h in agencies %}
             <tr>
                 <td class="text-muted">{{ loop.index }}</td>
-                <td class="fw-semibold"><i class="bi bi-hospital text-danger me-1"></i>{{ h.name }}</td>
+                <td class="fw-semibold"><i class="bi bi-building text-danger me-1"></i>{{ h.name }}</td>
                 <td>{{ h.city or '—' }}</td>
                 <td>{{ h.phone }}</td>
                 <td>{{ h.email or '—' }}</td>
                 <td class="text-muted small">{{ h.address or '—' }}</td>
                 {% if session.get('admin_logged_in') %}
                 <td>
-                    <form method="post" action="{{ url_for('hospitals.delete', hospital_id=h.id) }}"
+                    <form method="post" action="{{ url_for('agencies.delete', agency_id=h.id) }}"
                           onsubmit="return confirm('Remove {{ h.name }}?')">
                         <button type="submit" class="btn btn-sm btn-outline-danger">
                             <i class="bi bi-trash3"></i>
@@ -55,11 +55,11 @@
 {% else %}
 <div class="bb-card">
     <div class="card-body text-center py-5">
-        <i class="bi bi-hospital text-muted" style="font-size:3rem"></i>
-        <p class="text-muted mt-3 mb-1">No hospitals registered yet.</p>
+        <i class="bi bi-building text-muted" style="font-size:3rem"></i>
+        <p class="text-muted mt-3 mb-1">No agencies registered yet.</p>
         {% if session.get('admin_logged_in') %}
-        <a href="{{ url_for('hospitals.register') }}" class="btn btn-bb mt-2">
-            <i class="bi bi-plus-lg"></i> Register First Hospital
+        <a href="{{ url_for('agencies.register') }}" class="btn btn-bb mt-2">
+            <i class="bi bi-plus-lg"></i> Register First Agency
         </a>
         {% endif %}
     </div>

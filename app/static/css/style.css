@@ -196,8 +196,8 @@ a { text-decoration: none; }
     vertical-align: middle;
 }
 
-/* ── Blood type badge ──────────────────────────────────── */
-.blood-badge {
+/* ── Food category badge ──────────────────────────────────── */
+.category-badge {
     background: linear-gradient(135deg, var(--red-dark), var(--red));
     color: #fff;
     padding: .25rem .65rem;

@@ -1,21 +1,21 @@
 {% extends 'base.html' %}
-{% block title %}Register Donor — Blood Bank MS{% endblock %}
+{% block title %}Register Contributor — Food Bank MS{% endblock %}
 
 {% block content %}
 <div class="page-header">
     <div>
-        <h2><i class="bi bi-person-plus-fill text-danger me-2"></i>Register New Donor</h2>
-        <small class="text-muted">Add a new donor to the system</small>
+        <h2><i class="bi bi-person-plus-fill text-danger me-2"></i>Register New Contributor</h2>
+        <small class="text-muted">Add a new contributor to the system</small>
     </div>
-    <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Back to Donors
+    <a href="{{ url_for('contributors.list_contributors') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Contributors
     </a>
 </div>
 
 <div class="bb-card" style="max-width: 720px;">
-    <div class="card-header"><i class="bi bi-person-vcard text-danger"></i> Donor Information</div>
+    <div class="card-header"><i class="bi bi-person-vcard text-danger"></i> Contributor Information</div>
     <div class="card-body">
-        <form action="{{ url_for('donors.register') }}" method="post">
+        <form action="{{ url_for('contributors.register') }}" method="post">
             <div class="row g-3">
                 <div class="col-md-6">
                     <label class="form-label">Full Name <span class="text-danger">*</span></label>
@@ -26,10 +26,10 @@
                     <input type="number" name="age" class="form-control" min="18" max="65" placeholder="25" required>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Blood Type <span class="text-danger">*</span></label>
-                    <select name="blood_type" class="form-select" required>
+                    <label class="form-label">Food Category <span class="text-danger">*</span></label>
+                    <select name="food_category" class="form-select" required>
                         <option value="">Select...</option>
-                        {% for bt in blood_types %}
+                        {% for bt in food_categories %}
                             <option value="{{ bt }}">{{ bt }}</option>
                         {% endfor %}
                     </select>
@@ -40,23 +40,23 @@
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">Email</label>
-                    <input type="email" name="email" class="form-control" placeholder="donor@example.com">
+                    <input type="email" name="email" class="form-control" placeholder="contributor@example.com">
                 </div>
                 <div class="col-md-6">
                     <label class="form-label">City</label>
                     <input type="text" name="city" class="form-control" placeholder="New York">
                 </div>
                 <div class="col-md-6">
-                    <label class="form-label">Last Donated</label>
-                    <input type="date" name="last_donated" class="form-control">
-                    <div class="form-text">Leave blank if never donated. Donors can donate again after 90 days.</div>
+                    <label class="form-label">Last Contributed</label>
+                    <input type="date" name="last_contributed" class="form-control">
+                    <div class="form-text">Leave blank if never contributed. Contributors can contribute again after 90 days.</div>
                 </div>
             </div>
             <div class="mt-4 d-flex gap-2">
                 <button type="submit" class="btn btn-bb">
-                    <i class="bi bi-person-check-fill"></i> Register Donor
+                    <i class="bi bi-person-check-fill"></i> Register Contributor
                 </button>
-                <a href="{{ url_for('donors.list_donors') }}" class="btn btn-outline-secondary">Cancel</a>
+                <a href="{{ url_for('contributors.list_contributors') }}" class="btn btn-outline-secondary">Cancel</a>
             </div>
         </form>
     </div>
