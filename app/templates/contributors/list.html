@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Contributors — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-people-fill text-danger me-2"></i>Registered Contributors</h2>
+        <small class="text-muted">{{ contributors|length }} contributor{{ 's' if contributors|length != 1 }}</small>
+    </div>
+    {% if session.get('admin_logged_in') %}
+    <a href="{{ url_for('contributors.register') }}" class="btn btn-bb">
+        <i class="bi bi-person-plus-fill"></i> Register Contributor
+    </a>
+    {% endif %}
+</div>
+
+<div class="bb-card mb-4">
+    <div class="card-body">
+        <form action="{{ url_for('contributors.list_contributors') }}" method="get" class="row g-2 align-items-end">
+            <div class="col-sm-auto">
+                <label class="form-label">Filter by Food Category</label>
+                <select name="food_category" class="form-select" style="min-width:160px">
+                    <option value="">All Food Categories</option>
+                    {% for bt in food_categories %}
+                        <option value="{{ bt }}" {% if bt == selected %}selected{% endif %}>{{ bt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-sm-auto d-flex gap-2">
+                <button type="submit" class="btn btn-bb"><i class="bi bi-funnel-fill"></i> Filter</button>
+                {% if selected %}
+                    <a href="{{ url_for('contributors.list_contributors') }}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg"></i> Clear
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if contributors %}
+<div class="bb-table-wrap">
+    <table class="table bb-table mb-0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th>Food Category</th>
+                <th>Phone</th>
+                <th>City</th>
+                <th>Last Contributed</th>
+                <th>Eligibility</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for d in contributors %}
+            <tr>
+                <td class="text-muted">{{ loop.index }}</td>
+                <td>
+                    <a href="{{ url_for('contributors.detail', contributor_id=d.id) }}" class="fw-semibold text-decoration-none text-dark">
+                        {{ d.name }}
+                    </a>
+                </td>
+                <td>{{ d.age }}</td>
+                <td><span class="category-badge">{{ d.food_category }}</span></td>
+                <td>{{ d.phone }}</td>
+                <td>{{ d.city or '—' }}</td>
+                <td>{{ d.last_contributed or '—' }}</td>
+                <td>
+                    {% if d.eligibility == 'eligible' %}
+                        <span class="badge badge-eligible"><i class="bi bi-check-circle-fill me-1"></i>Eligible</span>
+                    {% elif d.eligibility == 'ineligible' %}
+                        <span class="badge badge-ineligible"><i class="bi bi-x-circle-fill me-1"></i>Not Eligible</span>
+                    {% else %}
+                        <span class="badge badge-unknown"><i class="bi bi-question-circle-fill me-1"></i>Unknown</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="bb-card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-people text-muted" style="font-size:3rem"></i>
+        <p class="text-muted mt-3 mb-1">No contributors found.</p>
+        {% if session.get('admin_logged_in') %}
+        <a href="{{ url_for('contributors.register') }}" class="btn btn-bb mt-2">
+            <i class="bi bi-person-plus-fill"></i> Register First Contributor
+        </a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Search Results — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-search text-danger me-2"></i>Search Results</h2>
+        {% if q %}
+        <small class="text-muted">
+            Food category <strong>{{ q }}</strong> in
+            <strong>{{ 'contributors' if search_type == 'contributor' else 'inventory' }}</strong>
+        </small>
+        {% endif %}
+    </div>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+{% if q %}
+    {% if results %}
+        {% if search_type == 'contributor' %}
+        <div class="bb-table-wrap">
+            <table class="table bb-table mb-0">
+                <thead>
+                    <tr><th>Name</th><th>Age</th><th>Food Category</th><th>Phone</th><th>City</th></tr>
+                </thead>
+                <tbody>
+                    {% for d in results %}
+                    <tr>
+                        <td>
+                            <a href="{{ url_for('contributors.detail', contributor_id=d.id) }}"
+                               class="fw-semibold text-decoration-none text-dark">{{ d.name }}</a>
+                        </td>
+                        <td>{{ d.age }}</td>
+                        <td><span class="category-badge">{{ d.food_category }}</span></td>
+                        <td>{{ d.phone }}</td>
+                        <td>{{ d.city or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="bb-table-wrap">
+            <table class="table bb-table mb-0">
+                <thead>
+                    <tr><th>Food Category</th><th>Units Available</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    {% for item in results %}
+                    <tr class="{% if item.units < 5 %}inv-critical{% elif item.units < 15 %}inv-low{% else %}inv-good{% endif %}">
+                        <td><span class="category-badge">{{ item.food_category }}</span></td>
+                        <td><strong>{{ item.units }}</strong> units</td>
+                        <td>
+                            {% if item.units < 5 %}
+                                <span class="badge bg-danger">Critical</span>
+                            {% elif item.units < 15 %}
+                                <span class="badge bg-warning text-dark">Low</span>
+                            {% else %}
+                                <span class="badge bg-success">Good</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    {% else %}
+    <div class="bb-card">
+        <div class="card-body text-center py-5">
+            <i class="bi bi-search text-muted" style="font-size:3rem"></i>
+            <p class="text-muted mt-3">No results found for food category <strong>{{ q }}</strong>.</p>
+        </div>
+    </div>
+    {% endif %}
+{% else %}
+<div class="bb-card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-search text-muted" style="font-size:3rem"></i>
+        <p class="text-muted mt-3">Use the search form on the Dashboard to find contributors or inventory by food category.</p>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-bb mt-2">Go to Dashboard</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

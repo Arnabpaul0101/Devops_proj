@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{% block title %}Food Requests — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-clipboard2-check-fill text-danger me-2"></i>Food Requests</h2>
+        <small class="text-muted">{{ food_requests|length }} total request{{ 's' if food_requests|length != 1 }}</small>
+    </div>
+    <a href="{{ url_for('requests.new_request') }}" class="btn btn-bb">
+        <i class="bi bi-plus-lg"></i> New Request
+    </a>
+</div>
+
+{% if food_requests %}
+<div class="bb-table-wrap">
+    <table class="table bb-table mb-0">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Beneficiary</th>
+                <th>Food Category</th>
+                <th>Units</th>
+                <th>Agency</th>
+                <th>Urgency</th>
+                <th>Status</th>
+                <th>Requested</th>
+                {% if session.get('admin_logged_in') %}<th>Actions</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in food_requests %}
+            <tr>
+                <td class="text-muted">{{ r.id }}</td>
+                <td class="fw-semibold">{{ r.beneficiary_name }}</td>
+                <td><span class="category-badge">{{ r.food_category }}</span></td>
+                <td>{{ r.units_required }}</td>
+                <td>{{ r.agency or '—' }}</td>
+                <td>
+                    {% if r.urgency == 'critical' %}
+                        <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Critical</span>
+                    {% elif r.urgency == 'urgent' %}
+                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill me-1"></i>Urgent</span>
+                    {% else %}
+                        <span class="badge bg-secondary">Normal</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if r.status == 'approved' %}
+                        <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Approved</span>
+                    {% elif r.status == 'rejected' %}
+                        <span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i>Rejected</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Pending</span>
+                    {% endif %}
+                </td>
+                <td class="text-muted small">{{ r.requested_at }}</td>
+                {% if session.get('admin_logged_in') %}
+                <td>
+                    {% if r.status == 'pending' %}
+                        <form method="post" action="{{ url_for('requests.approve', request_id=r.id) }}" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success">
+                                <i class="bi bi-check-lg"></i> Approve
+                            </button>
+                        </form>
+                        <form method="post" action="{{ url_for('requests.reject', request_id=r.id) }}" class="d-inline ms-1">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-lg"></i> Reject
+                            </button>
+                        </form>
+                    {% else %}
+                        <span class="text-muted small">—</span>
+                    {% endif %}
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="bb-card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-clipboard2-check text-muted" style="font-size:3rem"></i>
+        <p class="text-muted mt-3 mb-1">No food requests yet.</p>
+        <a href="{{ url_for('requests.new_request') }}" class="btn btn-bb mt-2">
+            <i class="bi bi-plus-lg"></i> Submit First Request
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

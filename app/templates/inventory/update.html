@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}Update Inventory — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-pencil-square text-danger me-2"></i>Update Inventory</h2>
+        <small class="text-muted">Adjust stock for <span class="category-badge ms-1">{{ item.food_category }}</span></small>
+    </div>
+    <a href="{{ url_for('inventory.list_inventory') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Inventory
+    </a>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-5">
+        <div class="bb-card">
+            <div class="card-header"><i class="bi bi-info-circle text-danger"></i> Current Status</div>
+            <div class="card-body text-center py-4">
+                <div class="category-badge mb-3" style="font-size:1.4rem;padding:.5rem 1.2rem;">{{ item.food_category }}</div>
+                <div class="stat-value mb-1">{{ item.units }}</div>
+                <div class="stat-label">Units Currently in Stock</div>
+                {% if item.units < 5 %}
+                    <span class="badge bg-danger mt-3">Critical Level</span>
+                {% elif item.units < 15 %}
+                    <span class="badge bg-warning text-dark mt-3">Low Level</span>
+                {% else %}
+                    <span class="badge bg-success mt-3">Good Level</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="bb-card">
+            <div class="card-header"><i class="bi bi-sliders text-danger"></i> Adjust Stock</div>
+            <div class="card-body">
+                <form action="{{ url_for('inventory.update', food_category=item.food_category) }}" method="post">
+                    <div class="mb-4">
+                        <label class="form-label">Action</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="action" id="add" value="add" checked>
+                                <label class="form-check-label" for="add">
+                                    <i class="bi bi-plus-circle-fill text-success"></i> Add Units
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="action" id="subtract" value="subtract">
+                                <label class="form-check-label" for="subtract">
+                                    <i class="bi bi-dash-circle-fill text-danger"></i> Remove Units
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="amount" class="form-label">Amount <span class="text-danger">*</span></label>
+                        <input type="number" name="amount" id="amount" class="form-control"
+                               min="1" value="1" required style="max-width:160px">
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-bb">
+                            <i class="bi bi-check-lg"></i> Update Inventory
+                        </button>
+                        <a href="{{ url_for('inventory.list_inventory') }}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

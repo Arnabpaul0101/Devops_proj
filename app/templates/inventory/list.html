@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}Food Inventory — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-basket2 text-danger me-2"></i>Food Inventory</h2>
+        <small class="text-muted">Current stock levels by food category</small>
+    </div>
+    <a href="{{ url_for('inventory.history') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-graph-up"></i> View History
+    </a>
+</div>
+
+<div class="bb-table-wrap">
+    <table class="table bb-table mb-0">
+        <thead>
+            <tr>
+                <th>Food Category</th>
+                <th>Units Available</th>
+                <th>Status</th>
+                <th>Last Updated</th>
+                {% if session.get('admin_logged_in') %}<th>Action</th>{% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in inventory %}
+                {% if item.units < 5 %}
+                    {% set row_class = 'inv-critical' %}
+                    {% set status_html %}
+                        <span class="badge bg-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Critical</span>
+                    {% endset %}
+                {% elif item.units < 15 %}
+                    {% set row_class = 'inv-low' %}
+                    {% set status_html %}
+                        <span class="badge bg-warning text-dark"><i class="bi bi-exclamation-circle-fill me-1"></i>Low</span>
+                    {% endset %}
+                {% else %}
+                    {% set row_class = 'inv-good' %}
+                    {% set status_html %}
+                        <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Good</span>
+                    {% endset %}
+                {% endif %}
+            <tr class="{{ row_class }}">
+                <td><span class="category-badge">{{ item.food_category }}</span></td>
+                <td><strong>{{ item.units }}</strong> <span class="text-muted small">units</span></td>
+                <td>{{ status_html }}</td>
+                <td class="text-muted small">{{ item.updated_at }}</td>
+                {% if session.get('admin_logged_in') %}
+                <td>
+                    <a href="{{ url_for('inventory.update', food_category=item.food_category) }}"
+                       class="btn btn-sm btn-bb">
+                        <i class="bi bi-pencil-fill"></i> Update
+                    </a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-3 d-flex gap-3 flex-wrap">
+    <span class="badge bg-danger py-2 px-3"><i class="bi bi-exclamation-triangle-fill me-1"></i>Critical — &lt; 5 units</span>
+    <span class="badge bg-warning text-dark py-2 px-3"><i class="bi bi-exclamation-circle-fill me-1"></i>Low — 5–14 units</span>
+    <span class="badge bg-success py-2 px-3"><i class="bi bi-check-circle-fill me-1"></i>Good — 15+ units</span>
+</div>
+{% endblock %}

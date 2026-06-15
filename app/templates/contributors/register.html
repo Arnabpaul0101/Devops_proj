@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Register Contributor — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-person-plus-fill text-danger me-2"></i>Register New Contributor</h2>
+        <small class="text-muted">Add a new contributor to the system</small>
+    </div>
+    <a href="{{ url_for('contributors.list_contributors') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Contributors
+    </a>
+</div>
+
+<div class="bb-card" style="max-width: 720px;">
+    <div class="card-header"><i class="bi bi-person-vcard text-danger"></i> Contributor Information</div>
+    <div class="card-body">
+        <form action="{{ url_for('contributors.register') }}" method="post">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" placeholder="John Doe" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Age <span class="text-danger">*</span></label>
+                    <input type="number" name="age" class="form-control" min="18" max="65" placeholder="25" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Food Category <span class="text-danger">*</span></label>
+                    <select name="food_category" class="form-select" required>
+                        <option value="">Select...</option>
+                        {% for bt in food_categories %}
+                            <option value="{{ bt }}">{{ bt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Phone <span class="text-danger">*</span></label>
+                    <input type="tel" name="phone" class="form-control" placeholder="+1 234 567 8900" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="contributor@example.com">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">City</label>
+                    <input type="text" name="city" class="form-control" placeholder="New York">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Last Contributed</label>
+                    <input type="date" name="last_contributed" class="form-control">
+                    <div class="form-text">Leave blank if never contributed. Contributors can contribute again after 90 days.</div>
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-bb">
+                    <i class="bi bi-person-check-fill"></i> Register Contributor
+                </button>
+                <a href="{{ url_for('contributors.list_contributors') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

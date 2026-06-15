@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% block title %}New Food Request — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-clipboard2-plus-fill text-danger me-2"></i>New Food Request</h2>
+        <small class="text-muted">Submit a food requirement</small>
+    </div>
+    <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Requests
+    </a>
+</div>
+
+<div class="bb-card" style="max-width: 760px;">
+    <div class="card-header"><i class="bi bi-clipboard2-check text-danger"></i> Request Details</div>
+    <div class="card-body">
+        <form action="{{ url_for('requests.new_request') }}" method="post">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Beneficiary Name <span class="text-danger">*</span></label>
+                    <input type="text" name="beneficiary_name" class="form-control" placeholder="Full name" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Food Category <span class="text-danger">*</span></label>
+                    <select name="food_category" class="form-select" required>
+                        <option value="">Select...</option>
+                        {% for bt in food_categories %}
+                            <option value="{{ bt }}">{{ bt }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Units Required <span class="text-danger">*</span></label>
+                    <input type="number" name="units_required" class="form-control" min="1" placeholder="1" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Agency</label>
+                    <select name="agency_id" class="form-select" onchange="fillAgencyName(this)">
+                        <option value="">Select registered agency...</option>
+                        {% for h in agencies %}
+                            <option value="{{ h.id }}" data-name="{{ h.name }}">{{ h.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Agency Name <span class="text-muted small">(or type manually)</span></label>
+                    <input type="text" name="agency" id="agencyName" class="form-control" placeholder="Agency name">
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Contact Phone <span class="text-danger">*</span></label>
+                    <input type="tel" name="contact_phone" class="form-control" placeholder="+1 234 567 8900" required>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Urgency</label>
+                    <div class="d-flex gap-4 mt-1">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="urgency" value="normal" id="normal" checked>
+                            <label class="form-check-label" for="normal">
+                                <span class="badge bg-secondary">Normal</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="urgency" value="urgent" id="urgent">
+                            <label class="form-check-label" for="urgent">
+                                <span class="badge bg-warning text-dark">Urgent</span>
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="urgency" value="critical" id="critical">
+                            <label class="form-check-label" for="critical">
+                                <span class="badge bg-danger">Critical</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-bb">
+                    <i class="bi bi-send-fill"></i> Submit Request
+                </button>
+                <a href="{{ url_for('requests.list_requests') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function fillAgencyName(sel) {
+    const opt = sel.options[sel.selectedIndex];
+    document.getElementById('agencyName').value = opt.dataset.name || '';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block title %}Register Agency — Food Bank MS{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h2><i class="bi bi-building-fill text-danger me-2"></i>Register Agency</h2>
+        <small class="text-muted">Add a new agency to the network</small>
+    </div>
+    <a href="{{ url_for('agencies.list_agencies') }}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Agencies
+    </a>
+</div>
+
+<div class="bb-card" style="max-width: 640px;">
+    <div class="card-header"><i class="bi bi-building text-danger"></i> Agency Information</div>
+    <div class="card-body">
+        <form action="{{ url_for('agencies.register') }}" method="post">
+            <div class="row g-3">
+                <div class="col-12">
+                    <label class="form-label">Agency Name <span class="text-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" placeholder="City General Agency" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Phone <span class="text-danger">*</span></label>
+                    <input type="tel" name="phone" class="form-control" placeholder="+1 234 567 8900" required>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" placeholder="info@agency.com">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">City</label>
+                    <input type="text" name="city" class="form-control" placeholder="New York">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Address</label>
+                    <input type="text" name="address" class="form-control" placeholder="123 Medical Drive, NY 10001">
+                </div>
+            </div>
+            <div class="mt-4 d-flex gap-2">
+                <button type="submit" class="btn btn-bb">
+                    <i class="bi bi-building-fill"></i> Register Agency
+                </button>
+                <a href="{{ url_for('agencies.list_agencies') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

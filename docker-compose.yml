@@ -1,0 +1,47 @@
+name: food-bank-devops
+
+services:
+  db:
+    image: mysql:8.0
+    container_name: foodbank_db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: foodbank
+      MYSQL_USER: fbuser
+      MYSQL_PASSWORD: fbpassword
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3307:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    image: foodbank-app:latest
+    container_name: foodbank_app
+    ports:
+      - "5000:5000"
+    environment:
+      FLASK_ENV: development
+      DB_HOST: db
+      DB_USER: fbuser
+      DB_PASSWORD: fbpassword
+      DB_NAME: foodbank
+      SECRET_KEY: change-me-in-production
+      ADMIN_USERNAME: admin
+      ADMIN_PASSWORD: admin123
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./app:/app
+
+volumes:
+  db_data:
