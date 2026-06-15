@@ -33,19 +33,6 @@ pip install -r requirements.txt
 pytest ../tests/ -v
 ```
 
-## Jenkins Setup
-
-1. Install Jenkins and the Pipeline plugin.
-2. Add Docker Hub credentials in Jenkins -> Manage Jenkins -> Credentials.
-   - Kind: Username with password
-   - ID: `dockerhub-credentials`
-3. Create a new Pipeline job.
-4. Under Pipeline -> Definition, select Pipeline script from SCM.
-5. Set SCM to Git and enter your repo URL.
-6. Script Path: `Jenkinsfile`.
-7. Edit `Jenkinsfile` and set `REGISTRY` to your Docker Hub username.
-8. Run the pipeline. All 5 stages should go green.
-
 ## Branch Strategy
 
 | Branch | Purpose | Pipeline |
