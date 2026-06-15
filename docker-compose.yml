@@ -7,7 +7,7 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
       MYSQL_DATABASE: foodbank
-      MYSQL_USER: fbuser
+      MYSQL_USER: fbuser 
       MYSQL_PASSWORD: fbpassword
     volumes:
       - db_data:/var/lib/mysql
